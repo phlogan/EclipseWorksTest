@@ -13,31 +13,33 @@ namespace EclipseWorksTest.Controllers
         {
             _httpClient = httpClientFactory.CreateClient("Prometheus");
         }
-        /// <summary>
-        /// Retorna o tempo médio de criação de um Project em milisegundos
-        /// </summary>
-        [HttpGet("{userId}/histograms/project/creationProcessTime")]
+
+        [HttpGet("{userId}/histograms/project/creationProcessTimeAvg")]
         [Produces(typeof(string))]
-        public async Task<IActionResult> GetProjectsCreationProcessTime(int userId)
+        public async Task<IActionResult> GetProjectsCreationProcessTimeAvg(int userId)
         {
             if (userId != managerRoleUserId)
                 return Unauthorized("O usuário não tem a função necessária");
+            try
+            {
+                var response = await _httpClient.GetAsync($"query?query=project_creation_process_time_sum%2Fproject_creation_process_time_count");
+                var content = await response.Content.ReadAsStringAsync();
+                var document = JsonDocument.Parse(content);
 
-            var response = await _httpClient.GetAsync($"query?query=project_creation_process_time_sum%2Fproject_creation_process_time_count");
-            var content = await response.Content.ReadAsStringAsync();
-            var document = JsonDocument.Parse(content);
+                var value = document
+                    .RootElement
+                    .GetProperty("data")
+                    .GetProperty("result")[0]
+                    .GetProperty("value")[1].GetString();
 
-            var value = document
-                .RootElement
-                .GetProperty("data")
-                .GetProperty("result")[0]
-                .GetProperty("value")[1].GetString();
-
-            return Ok(value);
+                return Ok(value);
+            }
+            catch(Exception ex)
+            {
+                return NoContent();
+            }
         }
-        /// <summary>
-        /// Retorna a contagem de Projects criados
-        /// </summary>
+
         [HttpGet("{userId}/histograms/project/createdCount")]
         [Produces(typeof(string))]
 
@@ -45,18 +47,24 @@ namespace EclipseWorksTest.Controllers
         {
             if (userId != managerRoleUserId)
                 return Unauthorized("O usuário não tem a função necessária");
+            try
+            {
+                var response = await _httpClient.GetAsync($"query?query=created_projects_total");
+                var content = await response.Content.ReadAsStringAsync();
+                var document = JsonDocument.Parse(content);
 
-            var response = await _httpClient.GetAsync($"query?query=created_projects_total");
-            var content = await response.Content.ReadAsStringAsync();
-            var document = JsonDocument.Parse(content);
+                var value = document
+                    .RootElement
+                    .GetProperty("data")
+                    .GetProperty("result")[0]
+                    .GetProperty("value")[1].GetString();
 
-            var value = document
-                .RootElement
-                .GetProperty("data")
-                .GetProperty("result")[0]
-                .GetProperty("value")[1].GetString();
-
-            return Ok(value);
+                return Ok(value);
+            }
+            catch (Exception ex)
+            {
+                return NoContent();
+            }
         }
     }
 }
