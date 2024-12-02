@@ -1,0 +1,24 @@
+services:
+  eclipseworkstest:
+    image: ${DOCKER_REGISTRY-}eclipseworkstest
+    build:
+      context: .
+      dockerfile: EclipseWorksTest/Dockerfile
+    ports:
+      - "5400:5400"
+      # - "5401:5401"
+    networks:
+      - localprometheus
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
+    networks:
+      - localprometheus
+
+networks:
+  localprometheus:
+    driver: bridge

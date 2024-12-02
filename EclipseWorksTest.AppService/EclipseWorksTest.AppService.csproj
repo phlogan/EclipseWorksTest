@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EclipseWorksTest.CrossCutting\EclipseWorksTest.CrossCutting.csproj" />
+    <ProjectReference Include="..\EclipseWorksTest.Domain\EclipseWorksTest.Domain.csproj" />
+    <ProjectReference Include="..\EclipseWorksTest.Infra.Data\EclipseWorksTest.Infra.Data.csproj" />
+  </ItemGroup>
+
+</Project>
